@@ -10,9 +10,9 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>youtube-dl</title>
+    <title>index - Youtube downloader</title>
 
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="youtube-dl/static/css/style.css" rel="stylesheet">
 
 </head>
@@ -56,12 +56,17 @@
                                 </button>
                             </span>
                         </div>
+                        <div style="margin: 20px auto; text-align: center; display: flex; justify-content: center; align-items: center; flex-wrap: wrap;">
+                            <span style="padding-right: 10px; color: #000;"><input style="width:300px" id="langs" name="langs" placeholder="default: zh,zh-Hans-zh,zh-Hans-en"></span>
+                            <span style="padding-right: 10px;"><input type="checkbox" id="embedSubs" name="embedSubs"> Embed subs </span>
+                            <span><input type="checkbox" id="onlySubs" name="onlySubs"> Only subs </span>
+                        </div>
                     </form>
                 </div>
             </div>
 
-            <p class"lead"><div id="messages"></div></p>
-            <p class"lead"><div id="queue"></div></p>
+            <p class="lead"><div id="messages"></div></p>
+            <p class="lead"><div id="queue"></div></p>
 
             <div class="table-responsive" style="overflow: hidden;">
                 <div style="overflow-y:auto; height:150px; width:auto; " >
@@ -79,22 +84,13 @@
                 </div>
             </div>
 
-            <div class="mastfoot">
-                <div class="inner">
-                    <p>Web frontend for <a href="https://github.com/hyeonsangjeon/youtube-dl-nas">youtube-dl-nas</a>, by @Hyeon Sang</a>.</p>
-                    <p>latest Ver 2.0219</p>
-                    <a href="https://www.youtube.com/watch?v=s9mO5q6GiAc">https://www.youtube.com/watch?v=s9mO5q6GiAc</a>
-                    <p></p>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="youtube-dl/static/logical_js/logic.js"></script>
 </body>
 

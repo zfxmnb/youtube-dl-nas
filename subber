@@ -7,6 +7,7 @@ if [ $# -eq 0 ]; then
 fi
 
 file=$1
+target=$2
 
 if [ ! -e $file ]; then
   echo "File $file not found!"
@@ -18,7 +19,12 @@ if [ ! -f $file ]; then
   exit 1
 fi
 
-perl -pe 's/{{(.*?)}}/$ENV{$1}/g' "$file" > temp
-mv temp "$file"
+if [[ $target ]]; then
+  perl -pe 's/{{(.*?)}}/$ENV{$1}/g' "$file" > temp
+  mv temp "$target"
+else
+  echo "Argument 2 is empty"
+  exit 1
+fi
 
 exit 0

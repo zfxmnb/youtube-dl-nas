@@ -42,6 +42,9 @@ $(function () {
         var data={};
         data.url = $("#url").val();
         data.resolution = $("#selResolution").val();
+        data.embedSubs = $("#embedSubs")[0].checked;
+        data.langs = $("#langs").val();
+        data.onlySubs = $("#onlySubs")[0].checked;
 
         $.ajax({
             method : "POST"

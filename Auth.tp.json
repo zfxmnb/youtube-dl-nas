@@ -1,0 +1,7 @@
+
+{
+    "MY_ID":"{{MY_ID}}",
+    "MY_PW":"{{MY_PW}}",
+    "APP_PORT":"{{APP_PORT}}",
+    "PROXY":"{{PROXY}}"
+  }

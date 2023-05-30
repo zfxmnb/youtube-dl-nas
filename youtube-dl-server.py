@@ -79,9 +79,12 @@ def q_size():
 def q_put():
     url = request.json.get("url")
     resolution = request.json.get("resolution")
+    embedSubs = request.json.get("embedSubs")
+    langs = request.json.get("langs")
+    onlySubs = request.json.get("onlySubs")
 
     if "" != url:
-        box = (url, WSAddr.wsClassVal, resolution, "web")
+        box = (url, WSAddr.wsClassVal, resolution, "web", embedSubs, langs, onlySubs)
         dl_q.put(box)
 
         if (Thr.dl_thread.is_alive() == False):
@@ -98,6 +101,9 @@ def q_put():
 def q_put_rest():
     url = request.json.get("url")
     resolution = request.json.get("resolution")
+    embedSubs = request.json.get("embedSubs")
+    langs = request.json.get("langs")
+    onlySubs = request.json.get("onlySubs")
 
     with open('Auth.json') as data_file:
         data = json.load(data_file)  # Auth info, when docker run making file
@@ -107,7 +113,7 @@ def q_put_rest():
         if (req_id != data["MY_ID"] or req_pw != data["MY_PW"]):
             return {"success": False, "msg": "Invalid password or account."}
         else:
-            box = (url, "", resolution, "api")
+            box = (url, "", resolution, "api", embedSubs, langs, onlySubs)
             dl_q.put(box)
             return {"success": True, "msg": 'download has started', "Remaining downloading count": json.dumps(dl_q.qsize()) }
 
@@ -125,16 +131,27 @@ def dl_worker():
 def build_youtube_dl_cmd(url):
     with open('Auth.json') as data_file:
         data = json.load(data_file)  # Auth info, when docker run making file
-        if (url[2] == "best"):
-            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.incomplete/%(title)s.%(ext)s", "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]", "--exec", "touch {} && mv {} ./downfolder/", "--merge-output-format", "mp4", url[0]]
+        langs = "zh,zh-Hans-zh,zh-Hans-en"
+        if (url[5]):
+            langs = url[5]
+
+        if (url[6]):
+            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.temp/%(title)s.%(ext)s", "--write-auto", "--write-auto-subs", "--sub-langs", langs, "--convert-subs", "srt", "--skip-download", url[0]]
+        elif(url[2] == "best" and url[4]):
+            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.temp/%(title)s.%(ext)s", "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]", "--write-auto", "--write-auto-subs", "--sub-langs", langs, "--embed-subs", "--exec", "touch {} && mv {} ./downfolder/", "--merge-output-format", "mp4", url[0]]
+        elif(url[2] == "best"):
+            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.temp/%(title)s.%(ext)s", "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]", "--write-auto", "--write-auto-subs", "--sub-langs", langs, "--convert-subs", "srt", "--exec", "touch {} && mv {} ./downfolder/", "--merge-output-format", "mp4", url[0]]
         # url[2] == "audio" for download_rest()
         elif (url[2] == "audio-m4a" or url[2] == "audio"):
-            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.incomplete/%(title)s.%(ext)s", "-f", "bestaudio[ext=m4a]", "--exec", "touch {} && mv {} ./downfolder/", url[0]]
+            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.temp/%(title)s.%(ext)s", "-f", "bestaudio[ext=m4a]", "--exec", "touch {} && mv {} ./downfolder/", url[0]]
         elif (url[2] == "audio-mp3"):
-            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.incomplete/%(title)s.%(ext)s", "-f", "bestaudio[ext=m4a]", "-x", "--audio-format", "mp3", "--exec", "touch {} && mv {} ./downfolder/", url[0]]
+            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.temp/%(title)s.%(ext)s", "-f", "bestaudio[ext=m4a]", "-x", "--audio-format", "mp3", "--exec", "touch {} && mv {} ./downfolder/", url[0]]
+        elif (url[4]):
+            resolution = url[2][:-1]
+            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.temp/%(title)s.%(ext)s", "-f", "bestvideo[height<="+resolution+"][ext=mp4]+bestaudio[ext=m4a]", "--write-auto-subs", "--sub-langs", langs, "--embed-subs", "--exec", "touch {} && mv {} ./downfolder/",  url[0]]
         else:
             resolution = url[2][:-1]
-            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.incomplete/%(title)s.%(ext)s", "-f", "bestvideo[height<="+resolution+"][ext=mp4]+bestaudio[ext=m4a]", "--exec", "touch {} && mv {} ./downfolder/",  url[0]]
+            cmd = ["yt-dlp", "--proxy", data['PROXY'], "-o", "./downfolder/.temp/%(title)s.%(ext)s", "-f", "bestvideo[height<="+resolution+"][ext=mp4]+bestaudio[ext=m4a]", "--write-auto", "--write-auto-subs", "--sub-langs", langs, "--convert-subs", "srt", "--exec", "touch {} && mv {} ./downfolder/",  url[0]]
         print (" ".join(cmd))
         return cmd
 
